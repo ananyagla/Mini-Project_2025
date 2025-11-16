@@ -22,6 +22,30 @@ The app also uses **AWS Lambda** to fetch CloudWatch metrics and automatically s
 
 ---
 
+## Project Preview
+
+<!-- 2x3 Grid -->
+| Login / Sign Up Page | AWS Credential Page |
+|---------------------|-------------------|
+| <img src="images/auth.png" alt="Login/Sign Up Page" width="300" style="border:2px solid white;"> | <img src="images/credentials.png" alt="AWS Credential Page" width="300" style="border:2px solid white;"> |
+
+| Cost Dashboard | Infrastructure Dashboard |
+|----------------|------------------------|
+| <img src="images/pic0.png" alt="Cost Dashboard" width="300" style="border:2px solid white;"> | <img src="images/pic1.png" alt="Infrastructure Dashboard" width="300" style="border:2px solid white;"> |
+
+| Instance Management Dashboard | Advisory Dashboard |
+|------------------------------|------------------|
+| <img src="images/pic2.png" alt="Instance Management Dashboard" width="300" style="border:2px solid white;"> | <img src="images/pic3.png" alt="Advisory Dashboard" width="300" style="border:2px solid white;"> |
+
+<!-- Full-width image row -->
+| History Logs & AI Assistant | |
+|-----------------------------|----------------|
+| <img src="images/pic4.png" alt="History Logs & AI Assistant" width="620" style="border:2px solid white;"> | |
+
+
+  
+---
+
 ## Project Structure
 
 ```
