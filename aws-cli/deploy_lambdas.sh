@@ -23,9 +23,9 @@ IAM_ROLE_NAME="CostInsightLambdaRole"
 FETCHER_FUNCTION_NAME="CostInsight-CloudWatchFetcher"
 SHUTDOWN_FUNCTION_NAME="CostInsight-AutoShutdown"
 
-# Paths to your Lambda source code directories
-FETCHER_LAMBDA_PATH="backend/lambdas/CostInsight-CloudWatchFetcher"
-SHUTDOWN_LAMBDA_PATH="backend/lambdas/CostInsight-AutoShutdown"
+# Paths to your Lambda source code
+FETCHER_LAMBDA_PATH="lambda/cloudwatch-fetcher.js"
+SHUTDOWN_LAMBDA_PATH="lambda/instance-auto-shutdown.js"
 
 # ===================================================================================
 # SCRIPT LOGIC
@@ -135,10 +135,9 @@ sleep 10
 
 # 3. Package and Upload CostInsight-CloudWatchFetcher Lambda
 echo "Step 3/6: Packaging and uploading '$FETCHER_FUNCTION_NAME'..."
-cd "$FETCHER_LAMBDA_PATH"
-zip -r9 "../${FETCHER_FUNCTION_NAME}.zip" .
-cd - > /dev/null
-aws s3 cp "backend/lambdas/${FETCHER_FUNCTION_NAME}.zip" "s3://$S3_BUCKET_NAME/"
+zip -j "${FETCHER_FUNCTION_NAME}.zip" "$FETCHER_LAMBDA_PATH"
+aws s3 cp "${FETCHER_FUNCTION_NAME}.zip" "s3://$S3_BUCKET_NAME/"
+rm "${FETCHER_FUNCTION_NAME}.zip"
 echo "'$FETCHER_FUNCTION_NAME' packaged and uploaded to S3."
 
 # 4. Create or Update CostInsight-CloudWatchFetcher Lambda function
@@ -152,7 +151,7 @@ else
       --function-name "$FETCHER_FUNCTION_NAME" \
       --runtime "nodejs18.x" \
       --role "$ROLE_ARN" \
-      --handler "index.handler" \
+      --handler "cloudwatch-fetcher.handler" \
       --code "S3Bucket=$S3_BUCKET_NAME,S3Key=${FETCHER_FUNCTION_NAME}.zip" \
       --timeout 30 \
       --memory-size 256 \
@@ -162,10 +161,9 @@ fi
 
 # 5. Package and Upload CostInsight-AutoShutdown Lambda
 echo "Step 5/6: Packaging and uploading '$SHUTDOWN_FUNCTION_NAME'..."
-cd "$SHUTDOWN_LAMBDA_PATH"
-zip -r9 "../${SHUTDOWN_FUNCTION_NAME}.zip" .
-cd - > /dev/null
-aws s3 cp "backend/lambdas/${SHUTDOWN_FUNCTION_NAME}.zip" "s3://$S3_BUCKET_NAME/"
+zip -j "${SHUTDOWN_FUNCTION_NAME}.zip" "$SHUTDOWN_LAMBDA_PATH"
+aws s3 cp "${SHUTDOWN_FUNCTION_NAME}.zip" "s3://$S3_BUCKET_NAME/"
+rm "${SHUTDOWN_FUNCTION_NAME}.zip"
 echo "'$SHUTDOWN_FUNCTION_NAME' packaged and uploaded to S3."
 
 # 6. Create or Update CostInsight-AutoShutdown Lambda function
@@ -179,7 +177,7 @@ else
       --function-name "$SHUTDOWN_FUNCTION_NAME" \
       --runtime "nodejs18.x" \
       --role "$ROLE_ARN" \
-      --handler "index.handler" \
+      --handler "instance-auto-shutdown.handler" \
       --code "S3Bucket=$S3_BUCKET_NAME,S3Key=${SHUTDOWN_FUNCTION_NAME}.zip" \
       --timeout 15 \
       --memory-size 128 \
