@@ -1,12 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: costinsight-service
+  name: grafana-service
 spec:
   selector:
-    app: costinsight
+    app: grafana
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: http
+      port: 3000
+      targetPort: 3000
   type: LoadBalancer

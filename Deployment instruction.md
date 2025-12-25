@@ -7,6 +7,7 @@ This guide provides comprehensive instructions for setting up, configuring, and 
 1.  [MongoDB Setup](#1-mongodb-setup)
 2.  [Local Deployment with Docker and Kubernetes](#2-local-deployment-with-docker-and-kubernetes)
 3.  [AWS Lambda Function Deployment](#3-aws-lambda-function-deployment)
+4.  [Application Monitoring with Prometheus and Grafana](#4-application-monitoring-with-prometheus-and-grafana)
 
 ---
 
@@ -177,3 +178,35 @@ This function stops an EC2 instance when triggered by your application.
     *   **Security:** Open.
     *   Click **Add**.
     *   The **API endpoint** URL will be displayed. You will need to configure this URL in your main application's settings so it can call this Lambda function.
+
+---
+
+## 4. Application Monitoring with Prometheus and Grafana
+
+To monitor your application's performance and resource usage, Prometheus and Grafana have been pre-configured.
+
+### A. Deploy Monitoring Components:
+
+1.  **Apply all the Kubernetes configurations**, including the new monitoring files:
+    ```bash
+    kubectl apply -f kubernetes/
+    ```
+    This command will deploy Prometheus and Grafana alongside your application.
+
+### B. Accessing the Dashboards:
+
+1.  **Access the Prometheus Dashboard:**
+    *   Use the following command to forward the Prometheus service port to your local machine:
+        ```bash
+        kubectl port-forward svc/prometheus-service 9090:9090
+        ```
+    *   Open your web browser and navigate to `http://localhost:9090`. You can use the query builder to explore metrics, such as `http_requests_total`.
+
+2.  **Access the Grafana Dashboard:**
+    *   Forward the Grafana service port:
+        ```bash
+        kubectl port-forward svc/grafana-service 3000:3000
+        ```
+    *   Open your web browser and go to `http://localhost:3000`.
+    *   The default login is `admin` for both username and password. You will be prompted to change the password upon first login.
+    *   To view application metrics, you'll need to add Prometheus as a data source (URL: `http://prometheus-service:9090`) and create a new dashboard.
