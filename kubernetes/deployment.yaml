@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: costinsight-deployment
+  labels:
+    app: costinsight
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: costinsight
+  template:
+    metadata:
+      labels:
+        app: costinsight
+    spec:
+      containers:
+      - name: costinsight
+        image: YOUR_DOCKER_HUB_USERNAME/costinsight:latest
+        ports:
+        - containerPort: 3000

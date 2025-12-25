@@ -28,7 +28,8 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "marked": "^17.0.0",
-    "mongodb": "^6.5.0"
+    "mongodb": "^6.5.0",
+    "prom-client": "^15.1.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
