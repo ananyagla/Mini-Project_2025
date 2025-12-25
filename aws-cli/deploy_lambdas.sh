@@ -24,8 +24,8 @@ FETCHER_FUNCTION_NAME="CostInsight-CloudWatchFetcher"
 SHUTDOWN_FUNCTION_NAME="CostInsight-AutoShutdown"
 
 # Paths to your Lambda source code directories
-FETCHER_LAMBDA_PATH="../backend/lambdas/CostInsight-CloudWatchFetcher"
-SHUTDOWN_LAMBDA_PATH="../backend/lambdas/CostInsight-AutoShutdown"
+FETCHER_LAMBDA_PATH="backend/lambdas/CostInsight-CloudWatchFetcher"
+SHUTDOWN_LAMBDA_PATH="backend/lambdas/CostInsight-AutoShutdown"
 
 # ===================================================================================
 # SCRIPT LOGIC
@@ -119,7 +119,7 @@ echo "Step 3/6: Packaging and uploading '$FETCHER_FUNCTION_NAME'..."
 cd "$FETCHER_LAMBDA_PATH"
 zip -r9 "../${FETCHER_FUNCTION_NAME}.zip" .
 cd - > /dev/null
-aws s3 cp "$FETCHER_LAMBDA_PATH/../${FETCHER_FUNCTION_NAME}.zip" "s3://$S3_BUCKET_NAME/"
+aws s3 cp "backend/lambdas/${FETCHER_FUNCTION_NAME}.zip" "s3://$S3_BUCKET_NAME/"
 echo "'$FETCHER_FUNCTION_NAME' packaged and uploaded to S3."
 
 # 4. Create or Update CostInsight-CloudWatchFetcher Lambda function
@@ -146,7 +146,7 @@ echo "Step 5/6: Packaging and uploading '$SHUTDOWN_FUNCTION_NAME'..."
 cd "$SHUTDOWN_LAMBDA_PATH"
 zip -r9 "../${SHUTDOWN_FUNCTION_NAME}.zip" .
 cd - > /dev/null
-aws s3 cp "$SHUTDOWN_LAMBDA_PATH/../${SHUTDOWN_FUNCTION_NAME}.zip" "s3://$S3_BUCKET_NAME/"
+aws s3 cp "backend/lambdas/${SHUTDOWN_FUNCTION_NAME}.zip" "s3://$S3_BUCKET_NAME/"
 echo "'$SHUTDOWN_FUNCTION_NAME' packaged and uploaded to S3."
 
 # 6. Create or Update CostInsight-AutoShutdown Lambda function
