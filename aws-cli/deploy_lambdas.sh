@@ -58,7 +58,6 @@ TRUST_POLICY_JSON='{
 }'
 
 # Define the required permissions policy
-# This grants necessary permissions for EC2, CloudWatch, Cost Explorer, and logging.
 PERMISSIONS_POLICY_JSON='{
     "Version": "2012-10-17",
     "Statement": [
@@ -88,7 +87,7 @@ PERMISSIONS_POLICY_JSON='{
     ]
 }'
 
-# Create the IAM role
+# Create the IAM role if it doesn't exist
 if ! aws iam get-role --role-name "$IAM_ROLE_NAME" >/dev/null 2>&1; then
     aws iam create-role --role-name "$IAM_ROLE_NAME" --assume-role-policy-document "$TRUST_POLICY_JSON"
     echo "IAM role '$IAM_ROLE_NAME' created."
@@ -97,13 +96,33 @@ else
 fi
 
 # Attach the AWS managed policy for basic Lambda execution
-echo "Attaching AWSLambdaBasicExecutionRole policy..."
-aws iam attach-role-policy --role-name "$IAM_ROLE_NAME" --policy-arn "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+MANAGED_POLICY_ARN="arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+if ! aws iam list-attached-role-policies --role-name "$IAM_ROLE_NAME" --query "AttachedPolicies[?PolicyArn=='$MANAGED_POLICY_ARN']" --output text | grep -q "."; then
+    echo "Attaching AWSLambdaBasicExecutionRole policy..."
+    aws iam attach-role-policy --role-name "$IAM_ROLE_NAME" --policy-arn "$MANAGED_POLICY_ARN"
+else
+    echo "AWSLambdaBasicExecutionRole policy already attached."
+fi
 
 # Create and attach the custom permissions policy
-echo "Creating and attaching custom permissions policy..."
-POLICY_ARN=$(aws iam create-policy --policy-name "${IAM_ROLE_NAME}Policy" --policy-document "$PERMISSIONS_POLICY_JSON" --query 'Policy.Arn' --output text)
-aws iam attach-role-policy --role-name "$IAM_ROLE_NAME" --policy-arn "$POLICY_ARN"
+POLICY_NAME="${IAM_ROLE_NAME}Policy"
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+POLICY_ARN="arn:aws:iam::$ACCOUNT_ID:policy/$POLICY_NAME"
+
+if ! aws iam get-policy --policy-arn "$POLICY_ARN" >/dev/null 2>&1; then
+    echo "Creating custom permissions policy..."
+    aws iam create-policy --policy-name "$POLICY_NAME" --policy-document "$PERMISSIONS_POLICY_JSON"
+else
+    echo "Custom permissions policy '$POLICY_NAME' already exists."
+fi
+
+if ! aws iam list-attached-role-policies --role-name "$IAM_ROLE_NAME" --query "AttachedPolicies[?PolicyArn=='$POLICY_ARN']" --output text | grep -q "."; then
+    echo "Attaching custom permissions policy..."
+    aws iam attach-role-policy --role-name "$IAM_ROLE_NAME" --policy-arn "$POLICY_ARN"
+else
+    echo "Custom permissions policy already attached."
+fi
+
 echo "IAM role setup complete."
 
 # Get the IAM Role ARN
