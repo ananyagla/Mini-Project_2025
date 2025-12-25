@@ -5,6 +5,17 @@
 set -e
 
 # ===================================================================================
+# SCRIPT SETUP
+# ===================================================================================
+
+# Get the absolute path of the directory where this script is located
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+
+# Navigate to the project root directory (which is one level up from the script's directory)
+PROJECT_ROOT=$(dirname "$SCRIPT_DIR")
+cd "$PROJECT_ROOT"
+
+# ===================================================================================
 # CONFIGURATION
 # ===================================================================================
 
@@ -23,7 +34,7 @@ IAM_ROLE_NAME="CostInsightLambdaRole"
 FETCHER_FUNCTION_NAME="CostInsight-CloudWatchFetcher"
 SHUTDOWN_FUNCTION_NAME="CostInsight-AutoShutdown"
 
-# Paths to your Lambda source code
+# Paths to your Lambda source code (relative to the project root)
 FETCHER_LAMBDA_PATH="lambda/cloudwatch-fetcher.js"
 SHUTDOWN_LAMBDA_PATH="lambda/instance-auto-shutdown.js"
 
@@ -31,7 +42,7 @@ SHUTDOWN_LAMBDA_PATH="lambda/instance-auto-shutdown.js"
 # SCRIPT LOGIC
 # ===================================================================================
 
-echo "Starting Lambda deployment process..."
+echo "Starting Lambda deployment process from project root: $PROJECT_ROOT"
 
 # 1. Create S3 bucket for Lambda code
 echo "Step 1/6: Creating S3 bucket '$S3_BUCKET_NAME'..."
